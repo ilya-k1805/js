@@ -1,6 +1,85 @@
+<html>
 <head>
+    <style>
+        .red {
+            background: red;
+        }
+        .d-none {
+            display: none;
+        }
 
+        .dropdown-item {
+            cursor: pointer;
+        }
+        .alnright {
+            text-align: right;
+        }
+
+        button {
+            padding: 5px;
+        }
+
+        i {
+            border: solid black;
+            border-width: 0 3px 3px 0;
+            display: none;
+            padding: 3px;
+        }
+
+        i.sorted-desc, i.sorted-asc {
+            display: inline-block;
+        }
+
+        i.sorted-asc {
+            transform: rotate(-135deg);
+            -webkit-transform: rotate(-135deg);
+        }
+
+        i.sorted-desc {
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+        }
+    </style>
 </head>
 <body>
-    <script src="app.js"></script>
+    <button id="btn-msg" data-text="Custom message">Show message</button>
+    <button id="btn-generate">Generate item</button>
+    <p><strong id="tag">Tag:</strong></p>
+    <ul>
+        <li>Item 1</li>
+        <li>Item 2</li>
+    </ul>
+    <ul class="menu">
+        <li class="dropdown-item">
+            <span>Dropdown menu item</span>
+            <div class="dropdown-menu d-none">
+                <ul class="dropdown-list">
+                    <li>Dropdown item 1</li>
+                    <li>Dropdown item 2</li>
+                </ul>
+                <!-- / .dropdown-list -->
+            </div>
+            <!-- / .dropdown-menu -->
+        </li>
+        <!-- / .dropdown-item -->
+        <li>
+            <span>Menu item</span>
+        </li>
+        <!-- / li -->
+        <li class="dropdown-item">
+            <span>Dropdown menu item 2</span>
+            <div class="dropdown-menu d-none">
+                <ul class="dropdown-list">
+                    <li>Second Dropdown item 1</li>
+                    <li>Second Dropdown item 2</li>
+                </ul>
+                <!-- / .dropdown-list -->
+            </div>
+            <!-- / .dropdown-menu -->
+        </li>
+        <!-- / .dropdown-item -->
+    </ul>
+    <div class="table-container"></div>
+<script src="app.js"></script>
 </body>
+</html>
