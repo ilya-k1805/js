@@ -10,6 +10,12 @@
     <!-- Font awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 
+
+    <style>
+        .task-resolved {
+            background: greenyellow;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-light bg-light mb-5">
@@ -46,6 +52,10 @@
     <!-- /.form-section -->
     <div class="todos-table mt-5">
         <div class="container">
+            <div class="col-8 mx-auto row">
+                <button class="show-all-tasks">Show all tasks</button>
+                <button class="show-not-resolved-tasks">Show not resolved tasks</button>
+            </div>
             <div class="row">
                 <div class="col-8 mx-auto">
                     <table class="table table-bordered">
