@@ -47,13 +47,13 @@
     table.addEventListener('click', function (e) {
         if (e.target.classList.contains('resolve-button')) {
             setTaskResolved(e.target.closest('tr').dataset.id, true);
+            reloadTasks();
         }
 
         if (e.target.classList.contains('restore-button')) {
             setTaskResolved(e.target.closest('tr').dataset.id, false);
+            reloadTasks();
         }
-
-        reloadTasks();
     });
 
     function generateId() {
