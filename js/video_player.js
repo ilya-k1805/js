@@ -1,9 +1,17 @@
 const VideoPlayer = (function () {
 
+  const defaultSkipTime = 2;
+
+  let clicks = 0;
+
   let video = null;
+  let controls = null;
   let toggleBtn = null;
   let progress = null;
   let progressWrapper = null;
+  let volume = null;
+  let playbackRate = null;
+  let player = null;
   /** 
    * @desc Fucntion init. 
    * @param {HTMLVideoElement} videoEl - video tag
@@ -74,6 +82,10 @@ const VideoPlayer = (function () {
     toggleBtn = document.querySelector('.toggle');
     progress = document.querySelector('.progress__filled');
     progressWrapper = document.querySelector('.progress');
+    volume = document.querySelector('.player__slider[name=volume]');
+    playbackRate = document.querySelector('.player__slider[name=playbackRate]');
+    controls = document.querySelector('.player__controls');
+    player = document.querySelector('.player');
   }
 
   function _handleProgress() {
@@ -84,12 +96,71 @@ const VideoPlayer = (function () {
   function _scrub(e) {
     video.currentTime = (e.offsetX / progressWrapper.offsetWidth) * video.duration;
   }
+
+  function _changeVolume(e) {
+    video.volume = e.target.value;
+  }
+
+  function _changePlaybackRate(e) {
+    video.playbackRate = e.target.value;
+  }
+
+  function _handleSkipButtons(e) {
+    if (e.target.hasAttribute('data-skip')) {
+      return _skip(e.target.dataset.skip);
+    }
+  }
+
+  function handleSidesClick(e) {
+    let skipTime = e.offsetX / video.offsetWidth > 0.5 ? defaultSkipTime : -defaultSkipTime;
+
+    _skip(skipTime);
+  }
+  
+  function _skip(time) {
+    video.currentTime = video.currentTime + parseInt(time);
+  }
+
+  function _handleClicks(e) {
+    clicks++;
+
+    let singleClick = setTimeout(function() {
+      if (clicks === 1) {
+        toggle();
+
+        clicks = 0;
+      }
+    }, 300);
+
+    if (clicks === 2) {
+      clearTimeout(singleClick);
+
+      handleSidesClick(e);
+
+      clicks = 0;
+    }
+  }
+  
+  function _handleMouseDown(e) {
+    player.addEventListener('mousemove', _scrub);
+
+    document.addEventListener('mouseup', mouseup);
+
+    function mouseup() {
+      player.removeEventListener('mousemove', _scrub);
+      document.removeEventListener('mouseup', mouseup);
+    }
+  }
  
   function _initEvents() {
     toggleBtn.addEventListener('click', toggle);
-    video.addEventListener('click', toggle);
+    video.addEventListener('click', _handleClicks);
     video.addEventListener('timeupdate', _handleProgress);
+    controls.addEventListener('click', _handleSkipButtons);
     progressWrapper.addEventListener('click', _scrub);
+    progressWrapper.addEventListener('mousedown', _handleMouseDown);
+    volume.addEventListener('change', _changeVolume);
+    playbackRate.addEventListener('change', _changePlaybackRate);
   }
 
   return {
