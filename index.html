@@ -1,6 +1,57 @@
 <head>
+    <style>
+        .user {
+            cursor: pointer;
+        }
 
+        .user:hover {
+            text-decoration: underline;
+        }
+
+        .user-info, form[name=addUser] {
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
+    <div class="users-container"></div>
+    <div>
+        <form name="addUser">
+            <p>
+                Name:
+            </p>
+            <p>
+                <input type="text" name="name">
+            </p>
+            <p>
+                Email:
+            </p>
+            <p>
+                <input type="email" name="email">
+            </p>
+            <p>
+                Username:
+            </p>
+            <p>
+                <input type="text" name="username">
+            </p>
+            <p>
+                Phone:
+            </p>
+            <p>
+                <input type="text" name="phone">
+            </p>
+            <p>
+                Website:
+            </p>
+            <p>
+                <input type="text" name="website">
+            </p>
+            <p>
+                <button>Send</button>
+            </p>
+        </form>
+    </div>
+    <div class="user-info"></div>
     <script src="app.js"></script>
 </body>
