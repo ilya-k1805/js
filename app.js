@@ -58,11 +58,17 @@ function newsServiceModule() {
   const apiUrl = 'https://newsapi.org';
   const apiKey = '9c27b0f722b84da5a08312d2b125351b';
   return {
-    topHeadlines(country, cb) {
-      http.get(`${apiUrl}/v2/top-headlines?country=${country}&category=technology&apiKey=${apiKey}`, cb);
+    topHeadlines(country, category, cb) {
+      http.get(`${apiUrl}/v2/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}`, cb);
+    },
+    topHeadlinesBySources(sources, cb) {
+      http.get(`${apiUrl}/v2/top-headlines?sources=${sources}&apiKey=${apiKey}`, cb);
     },
     everything(text, cb) {
       http.get(`${apiUrl}/v2/everything?q=${text}&apiKey=${apiKey}`, cb);
+    },
+    sources(cb) {
+      http.get(`${apiUrl}/v2/sources?apiKey=${apiKey}`, cb);
     }
   }
 }
@@ -73,6 +79,8 @@ const newsService = newsServiceModule();
 const newsContainer = document.querySelector('.news-container .row');
 const form = document.forms['newsControls'];
 const countrySelect = form['country'];
+const categorySelect = form['category'];
+const sourcesSelect = form['sources'];
 const searchInput = form['search'];
 
 //  init selects
@@ -80,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
   M.AutoInit();
   showLoader();
   loadNews();
+  newsService.sources(onGetSourcesResponse);
 });
 
 form.addEventListener('submit', (e) => {
@@ -87,33 +96,50 @@ form.addEventListener('submit', (e) => {
   showLoader();
 
   if (searchInput.value) {
-    newsService.everything(searchInput.value, onGetResponse);
+    newsService.everything(searchInput.value, onGetNewsResponse);
+  } else if (sourcesSelect.value !== 'all') {
+    newsService.topHeadlinesBySources(sourcesSelect.value, onGetNewsResponse)
   } else {
-    newsService.topHeadlines(countrySelect.value, onGetResponse);
+    newsService.topHeadlines(countrySelect.value, categorySelect.value, onGetNewsResponse);
   }
 });
 
-// При загрузке мы должны получить дефолтные новости
-//  - функция loadNews
-//  - OnGetResponse
-//  - newstTemplate
 function loadNews() {
-  newsService.topHeadlines(countrySelect.value, onGetResponse);
+  newsService.topHeadlines(countrySelect.value, categorySelect.value, onGetNewsResponse);
 }
 
-function onGetResponse(err, res) {
+function onGetNewsResponse(err, res) {
   hideLoader();
-  if (err) {
-    console.warn(err);
-    return;
-  }
 
-  if (!res.articles.length) {
-    M.toast({ html: 'Новости по вашему запросу не найдены!' });
+  if (!handleErrors(err, res.articles, 'Новости по вашему запросу не найдены!')) {
     return;
   }
 
   renderNews(res.articles);
+}
+
+function onGetSourcesResponse(err, res) {
+  hideLoader();
+
+  if (!handleErrors(err, res.sources, 'Ресурсы по вашему запросу не найдены!')) {
+    return;
+  }
+
+  renderSourcesSelect(res.sources);
+}
+
+function handleErrors(err, data, dataErrMessage) {
+  if (err) {
+    console.warn(err);
+    return false;
+  }
+
+  if (!data.length) {
+    M.toast({ html: dataErrMessage });
+    return false;
+  }
+
+  return true;
 }
 
 function renderNews(news) {
@@ -126,6 +152,18 @@ function renderNews(news) {
   });
 
   newsContainer.insertAdjacentHTML('afterbegin', fragment);
+}
+
+function renderSourcesSelect(sources) {
+  let fragment = '';
+  sources.forEach(item => fragment += getOptionTemplate(item.id, item.name));
+
+  sourcesSelect.insertAdjacentHTML('beforeend', fragment);
+  M.FormSelect.init(sourcesSelect);
+}
+
+function getOptionTemplate(value, content) {
+  return `<option value="${value}">${content}</option>`;
 }
 
 function clearContainer() {
@@ -150,8 +188,7 @@ function newsTemplate({ title, urlToImage, url, description }) {
   </div>
   `;
 }
-// При изменении формы выводим полученные новости или если новостей нет то выводим уведомление
-// При каждой загрузке новостей показывать прелодер
+
 function showLoader() {
   const template = `
   <div class="progress">
@@ -168,3 +205,4 @@ function hideLoader() {
     loader.remove();
   }
 }
+
