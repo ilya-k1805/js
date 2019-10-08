@@ -52,3 +52,32 @@ function http() {
         },
     };
 }
+
+function httpFetch() {
+    function handleResponse(response, cb) {
+        response.then(function (res) {
+            if (!res.ok) {
+                throw Error(`Status code: ${res.status}`);
+            }
+
+            return res.json()
+        })
+            .then(data => cb(null, data))
+            .catch(error => cb(error));
+    }
+
+    return {
+        get(url, cb) {
+            handleResponse(fetch(url), cb);
+        },
+        post(url, body = {}, headers = {}, cb) {
+            const response = fetch(url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(body)
+            });
+
+            handleResponse(response, cb);
+        },
+    };
+}
